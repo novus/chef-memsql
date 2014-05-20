@@ -1,0 +1,1 @@
+default[:memsql][:license] = nil
