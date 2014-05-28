@@ -16,3 +16,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+
+
+remote_file "#{Chef::Config[:file_cache_path]}/memsql-#{node[:memsql][:version]}" do
+  source "#{node[:memsql][:url]}/#{node[:memsql][:license]}/memsql-#{node[:memsql][:version]}"
+  action :create_if_missing
+end
+
+dpkg_package node[:memsql][:version] do
+  source  "#{Chef::Config[:file_cache_path]}/memsql-#{node[:memsql][:version]}"
+  action :install
+end
+
+service "memsql" do
+  supports :status => true, :restart => true, :reload => true, :start => true, :stop => true
+  action [ :enable, :start ]
+end
+
