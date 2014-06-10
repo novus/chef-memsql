@@ -15,8 +15,11 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#
+#        node.run_list.roles.include?('base')
 
+package "libmysqlclient-dev" do
+  action :install
+end
 
 remote_file "#{Chef::Config[:file_cache_path]}/memsql-#{node[:memsql][:version]}" do
   source "#{node[:memsql][:url]}/#{node[:memsql][:license]}/memsql-#{node[:memsql][:version]}"
@@ -33,3 +36,28 @@ service "memsql" do
   action [ :enable, :start ]
 end
 
+
+master_aggregator = search(:node, "role:memsql_master_aggregator").first
+
+
+child_aggregators = search(:node, "role:memsql_child_aggregator")
+child_aggregators.each do |node|
+  Chef::Log.info("leaf #{node["name"]} has IP address #{node["ipaddress"]}")
+end
+
+leaves = search(:node, "role:memsql_leaf")
+leaves.each do |node|
+  Chef::Log.info("leaf #{node["name"]} has IP address #{node["ipaddress"]}")
+end
+
+
+template "/var/lib/memsql.cnf" do
+  source "memsql.cnf"
+  mode 0600
+  owner "memsql"
+  group "memsql"
+  variables({
+               :master_aggregator_ip => node.run_list.roles.include?("child_aggregator") ? master_aggregator["ipaddress"] : nil,
+               :is_master => node.run_list.roles.include?("master_aggregator") ? true : false
+            })
+end

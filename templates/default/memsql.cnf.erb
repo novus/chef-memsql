@@ -33,3 +33,5 @@ bind-address        = 0.0.0.0
 max-connections     = 8192
 core-file
 critical-diagnostics = off
+<%= @is_master ? "master-aggregator" : "" %>
+<%= !@master_aggregator_ip.nil? ? "master-aggregator = #{@master_aggregator_ip}" : ""%>
