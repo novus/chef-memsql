@@ -1,0 +1,17 @@
+#!/bin/bash
+BACKUP_PATH='/backups/memsql_backups/latest'
+
+BACKUP_NAME="<%=@database%>"
+
+/usr/bin/mysql -u root -h 127.0.0.1 -e "BACKUP DATABASE <%=@database%> to \"${BACKUP_PATH}/${BACKUP_NAME}\""
+
+
+CURRENT_BACKUP=`find ${BACKUP_PATH}/* -type d |tail -n 1 |cut -d / -f5`
+
+cd $BACKUP_PATH
+
+TAR_COMMAND=`/bin/tar -czvf ./${BACKUP_NAME}.tar.gz ./${CURRENT_BACKUP}`
+
+rm -rf $CURRENT_BACKUP
+
+/opt/bin/rotate-backups.py

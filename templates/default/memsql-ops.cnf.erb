@@ -1,0 +1,32 @@
+[cluster]
+; connection information for the cluster
+db_host: 127.0.0.1
+db_port: 3306
+db_name: dashboard
+db_user: root
+db_pass:
+
+
+[dashboard]
+; connection information for the dashboard database
+db_host: 127.0.0.1
+db_port: 3306
+db_name: dashboard
+db_user: root
+db_pass:
+
+[analytics]
+; how many hours of analytics data should be kept?
+retention: 6
+; how many hours of event data should be kept?
+events_retention: 6
+; how many hours of facts data should be kept?
+facts_retention: 6
+
+[http]
+host: 0.0.0.0
+port: 9000
+
+[global]
+debug: false
+verbose_errors: false
