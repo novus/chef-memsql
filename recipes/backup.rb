@@ -38,7 +38,7 @@ node[:memsql][:backups][:databases].each do |database|
 
 
 
-  cron "memsql backup" do
+  cron "memsql #{database} backup" do
     hour '*'
     minute '0,30'
     weekday '*'
