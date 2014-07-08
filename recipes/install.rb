@@ -30,7 +30,7 @@ end
 filtered = node.memsql.node_scope.enabled ? node.memsql.node_scope.filter : ""
 
 #install client libs
-%w(mysql-client libmysqlclient-dev).each do |pkg|
+%w(g++ mysql-client libmysqlclient-dev).each do |pkg|
   package pkg do
     action :install
   end
@@ -61,10 +61,7 @@ service "memsql" do
 end
 
 #find the master aggregator
-master_aggregator = search(:node, "role:memsql_master_aggregator #{filtered}").first
-
-#if there is none, assume single node installation, return self
-master_aggregator = master_aggregator.nil? ? node : master_aggreagtor
+master_aggregator = search(:node, "role:memsql_master_aggregator #{filtered}").first || node
 
 #find leaf nodes
 leaves = search(:node, "role:memsql_leaf #{filtered}")
@@ -82,8 +79,8 @@ template "/var/lib/memsql/memsql.cnf" do
   owner "memsql"
   group "memsql"
   variables({
-                :master_aggregator_ip => node.run_list.roles.include?("child_aggregator") ? master_aggregator["ipaddress"] : nil,
-                :is_master => node.run_list.roles.include?("master_aggregator") ? true : false
+                :master_aggregator_ip => node.run_list.roles.include?("memsql_child_aggregator") ? master_aggregator["ipaddress"] : nil,
+                :is_master => node.run_list.roles.include?("memsql_master_aggregator") ? true : false
             })
 end
 
