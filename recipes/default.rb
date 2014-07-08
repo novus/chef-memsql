@@ -17,6 +17,11 @@
 # limitations under the License.
 #        node.run_list.roles.include?('base')
 
+#TODO: refactor
+filtered = node.memsql.node_scope.enabled ? node.memsql.node_scope.filter : ""
+
+package 'g++'
+
 package "libmysqlclient-dev" do
   action :install
 end
@@ -36,28 +41,28 @@ service "memsql" do
   action [ :enable, :start ]
 end
 
+master_aggregator = search(:node, "role:memsql_master_aggregator #{filtered}").first
+Chef::Log.info("master aggregator #{master_aggregator["name"]} has IP address #{node["ipaddress"]}") if master_aggregator
 
-master_aggregator = search(:node, "role:memsql_master_aggregator").first
 
-
-child_aggregators = search(:node, "role:memsql_child_aggregator")
-child_aggregators.each do |node|
-  Chef::Log.info("leaf #{node["name"]} has IP address #{node["ipaddress"]}")
+child_aggregators = search(:node, "role:memsql_child_aggregator #{filtered}")
+child_aggregators.each do |agg|
+  Chef::Log.info("child aggregator #{agg["name"]} has IP address #{agg["ipaddress"]}")
 end
 
-leaves = search(:node, "role:memsql_leaf")
-leaves.each do |node|
-  Chef::Log.info("leaf #{node["name"]} has IP address #{node["ipaddress"]}")
+leaves = search(:node, "role:memsql_leaf #{filtered}")
+leaves.each do |leaf|
+  Chef::Log.info("leaf #{leaf["name"]} has IP address #{leaf["ipaddress"]}")
 end
 
 
 template "/var/lib/memsql.cnf" do
   source "memsql.cnf"
   mode 0600
-  owner "memsql"
-  group "memsql"
+  owner node.memsql.owner
+  group node.memsql.group
   variables({
-               :master_aggregator_ip => node.run_list.roles.include?("child_aggregator") ? master_aggregator["ipaddress"] : nil,
-               :is_master => node.run_list.roles.include?("master_aggregator") ? true : false
+               :master_aggregator_ip => node.run_list.roles.include?("memsql_child_aggregator") ? master_aggregator["ipaddress"] : nil,
+               :is_master => node.run_list.roles.include?("memsql_master_aggregator") ? true : false
             })
 end

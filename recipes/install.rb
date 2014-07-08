@@ -16,7 +16,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# Create user and group first, so we have control over uid and gid instead of leaving it to fate
+group node.memsql.group do
+  gid node.memsql.gid
+end
 
+user node.memsql.owner do
+  uid node.memsql.uid
+  group node.memsql.group
+end
+
+#TODO refactor
+filtered = node.memsql.node_scope.enabled ? node.memsql.node_scope.filter : ""
 
 #install client libs
 %w(mysql-client libmysqlclient-dev).each do |pkg|
@@ -50,13 +61,13 @@ service "memsql" do
 end
 
 #find the master aggregator
-master_aggregator = search(:node, "role:memsql_master_aggregator").first
+master_aggregator = search(:node, "role:memsql_master_aggregator #{filtered}").first
 
 #if there is none, assume single node installation, return self
 master_aggregator = master_aggregator.nil? ? node : master_aggreagtor
 
 #find leaf nodes
-leaves = search(:node, "role:memsql_leaf")
+leaves = search(:node, "role:memsql_leaf #{filtered}")
 
 #attaches leaf to master aggregator
 leaves.each do |node|
@@ -64,7 +75,6 @@ leaves.each do |node|
   #attach the leaf on the master aggregator
   Chef::Log.info("leaf #{node["name"]} has IP address #{node["ipaddress"]}")
 end
-
 
 template "/var/lib/memsql/memsql.cnf" do
   source "memsql.cnf.erb"
