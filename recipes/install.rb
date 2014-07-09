@@ -30,7 +30,7 @@ end
 filtered = node.memsql.node_scope.enabled ? node.memsql.node_scope.filter : ""
 
 #install client libs
-include_recipe 'apt' if node.platform_family == 'debian' # apt-cache update
+include_recipe 'apt::default' # apt-cache update
 %w(g++ mysql-client libmysqlclient-dev).each do |pkg|
   package pkg do
     action :install
