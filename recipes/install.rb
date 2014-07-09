@@ -82,7 +82,8 @@ template "/var/lib/memsql/memsql.cnf" do
   group "memsql"
   variables({
                 :master_aggregator_ip => node.run_list.roles.include?("memsql_child_aggregator") ? master_aggregator["ipaddress"] : nil,
-                :is_master => node.run_list.roles.include?("memsql_master_aggregator") ? true : false
+                :is_master => node.run_list.roles.include?("memsql_master_aggregator") ? true : false,
+                :redundancy_level => node.memsql.redundancy_level
             })
 end
 

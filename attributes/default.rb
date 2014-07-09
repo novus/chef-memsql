@@ -4,6 +4,7 @@ default[:memsql][:uid] = 2027
 default[:memsql][:gid] = node.memsql.uid
 default[:memsql][:license] = nil
 default[:memsql][:version] = "2.6.x86_64.deb"
+default[:memsql][:redundancy_level] = 1
 default[:memsql][:url]  = "http://download.memsql.com"
 default[:memsql][:backups][:databases] = []
 default[:memsql][:backups][:nfs_host] = nil

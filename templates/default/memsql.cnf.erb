@@ -34,4 +34,5 @@ max-connections     = 8192
 core-file
 critical-diagnostics = off
 <%= @is_master ? "master-aggregator" : "" %>
+<%= @is_master ? "redundancy_level = #{@redundancy_level}" : ""%>
 <%= !@master_aggregator_ip.nil? ? "master-aggregator = #{@master_aggregator_ip}" : ""%>
