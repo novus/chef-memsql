@@ -36,13 +36,11 @@ filtered = node.memsql.node_scope.enabled ? node.memsql.node_scope.filter : ""
   end
 end
 
-#download memsql
 remote_file "#{Chef::Config[:file_cache_path]}/memsql-#{node[:memsql][:version]}" do
   source "#{node[:memsql][:url]}/#{node[:memsql][:license]}/memsql-#{node[:memsql][:version]}"
   action :create_if_missing
 end
 
-#install memsql
 dpkg_package node[:memsql][:version] do
   source  "#{Chef::Config[:file_cache_path]}/memsql-#{node[:memsql][:version]}"
   action :install
