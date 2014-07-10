@@ -91,8 +91,10 @@ template "/var/lib/memsql/memsql.cnf" do
             })
 end
 
-
 node[:memsql][:users].each do |user|
   %x(sudo mysql -u root -h #{master_aggregator[:ipaddress]} -e "grant all on *.* to '#{user[:name]}'@'localhost' identified by '#{user[:password]}'; flush privileges;")
 end
 
+if node.memsql.ops.enabled
+  include_recipe "memsql::collectd"
+end

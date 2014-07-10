@@ -13,3 +13,6 @@ default[:memsql][:backups][:remote_mount_path] = nil
 default[:memsql][:users] = [{:name => 'developer', :password => 'password'}]
 default[:memsql][:node_scope][:enabled] = true
 default[:memsql][:node_scope][:filter] = " AND chef_environment:#{node.chef_environment}"
+default[:memsql][:ops][:enabled] = false
+default[:memsql][:collectd][:url] = "http://download.memsql.com/ops-latest"
+default[:memsql][:collectd][:package] = "collectd-5.4.0.x86_64.deb"
