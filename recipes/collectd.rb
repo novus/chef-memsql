@@ -29,6 +29,9 @@ dpkg_package node[:memsql][:collectd][:package] do
   action :install
 end
 
+#find the master aggregator
+master_aggregator = search(:node, "role:memsql_master_aggregator #{filtered}").first || node
+
 template "/etc/collectd.conf" do
   source "collectd.conf.erb"
   mode 0640
