@@ -51,7 +51,8 @@ dpkg_package node[:memsql][:version] do
 end
 
 #move to mounted ec2 volume
-if !Dir.exists?('/data/memsql')
+if !Dir.exists?('/data/memsql') and Dir.exists?('/var/lib/memsql')
+  %x(mkdir -p /data)
   %x(mv /var/lib/memsql /data/memsql)
   %x(ln -s /data/memsql /var/lib/memsql)
 end
@@ -86,6 +87,7 @@ template "/var/lib/memsql/memsql.cnf" do
                 :redundancy_level => node.memsql.redundancy_level
             })
 end
+
 
 node[:memsql][:users].each do |user|
   %x(sudo mysql -u root -h #{master_aggregator[:ipaddress]} -e "grant all on *.* to '#{user[:name]}'@'localhost' identified by '#{user[:password]}'; flush privileges;")
