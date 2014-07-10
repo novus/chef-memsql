@@ -30,6 +30,8 @@ dpkg_package node[:memsql][:collectd][:package] do
 end
 
 #find the master aggregator
+#TODO refactor
+filtered = node.memsql.node_scope.enabled ? node.memsql.node_scope.filter : ""
 master_aggregator = search(:node, "role:memsql_master_aggregator #{filtered}").first || node
 
 template "/etc/collectd.conf" do
