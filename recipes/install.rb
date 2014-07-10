@@ -16,14 +16,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Create user and group first, so we have control over uid and gid instead of leaving it to fate
-group node.memsql.group do
-  gid node.memsql.gid
-end
 
-user node.memsql.owner do
-  uid node.memsql.uid
-  group node.memsql.group
+# Create user and group first, so we have control over uid and gid instead of leaving it to fate
+if %x(grep #{node.memsql.owner} /etc/passwd | wc -l).strip.to_i == 0
+  group node.memsql.group do
+    gid node.memsql.gid
+  end
+
+  user node.memsql.owner do
+    uid node.memsql.uid
+    group node.memsql.group
+  end
 end
 
 #TODO refactor
