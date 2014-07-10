@@ -43,3 +43,9 @@ template "/etc/collectd.conf" do
                 :master_aggregator_ip => node.run_list.roles.include?("memsql_child_aggregator") ? master_aggregator["ipaddress"] : nil
   })
 end
+
+#start collectd
+service "collectd" do
+  supports :status => true, :restart => true, :reload => true, :start => true, :stop => true
+  action [ :enable, :start ]
+end
