@@ -19,22 +19,15 @@
 
 package 'libtool'
 
-collectd_pkg = "#{Chef::Config[:file_cache_path]}/#{node[:memsql][:collectd][:package]}"
-
-remote_file collectd_pkg do
-  source "#{node[:memsql][:collectd][:url]}/#{node[:memsql][:collectd][:package]}"
+remote_file "#{Chef::Config[:file_cache_path]}/#{node[:memsql][:collectd][:package]}" do
+  source "#{node[:memsql][:url]}/#{node[:memsql][:collectd][:package]}"
   action :create_if_missing
 end
 
-dpkg_package 'collectd' do
-  source collectd_pkg
+dpkg_package node[:memsql][:collectd][:package] do
+  source  "#{Chef::Config[:file_cache_path]}/#{node[:memsql][:collectd][:package]}"
   action :install
 end
-
-#find the master aggregator
-#TODO refactor
-filtered = node.memsql.node_scope.enabled ? node.memsql.node_scope.filter : ""
-master_aggregator = search(:node, "role:memsql_master_aggregator #{filtered}").first || node
 
 template "/etc/collectd.conf" do
   source "collectd.conf.erb"
