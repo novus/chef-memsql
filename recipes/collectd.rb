@@ -20,7 +20,7 @@
 package 'libtool'
 
 remote_file "#{Chef::Config[:file_cache_path]}/#{node[:memsql][:collectd][:package]}" do
-  source "#{node[:memsql][:url]}/#{node[:memsql][:collectd][:package]}"
+  source "#{node[:memsql][:collectd][:url]}/#{node[:memsql][:collectd][:package]}"
   action :create_if_missing
 end
 
