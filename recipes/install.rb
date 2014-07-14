@@ -48,7 +48,7 @@ remote_file "#{Chef::Config[:file_cache_path]}/memsql-#{node[:memsql][:version]}
   action :create_if_missing
 end
 
-dpkg_package "memsql-#{node[:memsql][:version]}" do
+dpkg_package "memsql" do
   source  "#{Chef::Config[:file_cache_path]}/memsql-#{node[:memsql][:version]}"
   action :install
 end
