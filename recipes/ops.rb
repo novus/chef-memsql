@@ -44,7 +44,8 @@ template "/var/lib/memsql-ops/memsql_ops.cnf" do
   source "memsql_ops.cnf.erb"
   mode 0640
   variables({
-                :monitored_instance => monitored_instance
+                :monitored_instance => monitored_instance,
+                :ops => node.memsql.ops
   })
 end
 
