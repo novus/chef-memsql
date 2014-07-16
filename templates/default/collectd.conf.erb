@@ -23,7 +23,7 @@ LoadPlugin logfile
     ModulePath "/var/lib/collectd/python/lib/python2.7/dist-packages/"
     Import "memsql_collectd.plugin"
     <Module "memsql_collectd.plugin">
-        Host "<%= @master_aggregator_ip %>"
+        Host "<%= @collector_ip %>"
         User "root"
         Port "3306"
         TypesDB "/usr/share/collectd/types.db"

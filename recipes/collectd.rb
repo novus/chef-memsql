@@ -36,11 +36,13 @@ end
 filtered = node.memsql.node_scope.enabled ? node.memsql.node_scope.filter : ""
 master_aggregator = search(:node, "role:memsql_master_aggregator #{filtered}").first || node
 
+standalone = node.run_list.roles.include?("memsql_standalone") ? node : nil
+
 template "/etc/collectd.conf" do
   source "collectd.conf.erb"
   mode 0640
   variables({
-                :master_aggregator_ip => node.run_list.roles.include?("memsql_child_aggregator") ? master_aggregator["ipaddress"] : nil
+                :collector_ip => standalone ? node.ipaddress : master_aggregator.ipaddress
   })
 end
 
