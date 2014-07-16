@@ -38,7 +38,7 @@ master_aggregator = search(:node, "role:memsql_master_aggregator #{filtered}").f
 # 1. If node[:memsql][:ops][:monitored_instance] contains a node, that's what it will be monitoring
 # 2. No? Look for a master aggregator in the same chef_environment, and monitor that, or
 # 3. Otherwise, assume this is a standalone and we want to monitor it
-monitored_instance = node.run_list.roles.include?("memsql_standalone") ? node || master_aggregator
+monitored_instance = node.run_list.roles.include?("memsql_standalone") ? node : master_aggregator
 
 template "/var/lib/memsql-ops/memsql_ops.cnf" do
   source "memsql_ops.cnf.erb"
