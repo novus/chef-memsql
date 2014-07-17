@@ -53,13 +53,6 @@ dpkg_package "memsql" do
   action :install
 end
 
-#move to mounted ec2 volume
-if !Dir.exists?('/data/memsql') and Dir.exists?('/var/lib/memsql')
-  %x(mkdir -p /data)
-  %x(mv /var/lib/memsql /data/memsql)
-  %x(ln -s /data/memsql /var/lib/memsql)
-end
-
 #start memsql
 service "memsql" do
   supports :status => true, :restart => true, :reload => true, :start => true, :stop => true
