@@ -1,6 +1,6 @@
 [cluster]
 ; connection information for the cluster
-db_host: 127.0.0.1
+db_host: <%= @monitored_instance[:ipaddress] %>
 db_port: 3306
 db_name: dashboard
 db_user: root
@@ -24,9 +24,9 @@ events_retention: 6
 facts_retention: 6
 
 [http]
-host: 0.0.0.0
-port: 9000
+host: <%= @ops['http_host'] %>
+port: <%= @ops['http_port'] %>
 
 [global]
-debug: false
-verbose_errors: false
+debug: <%= @ops['debug'] %>
+verbose_errors: <%= @ops['verbose_errors'] %>

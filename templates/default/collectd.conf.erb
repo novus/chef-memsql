@@ -1,0 +1,31 @@
+Interval 1
+
+LoadPlugin cpu
+LoadPlugin memory
+LoadPlugin df
+LoadPlugin interface
+
+LoadPlugin syslog
+LoadPlugin logfile
+
+<Plugin logfile>
+    LogLevel "info"
+    File "stdout"
+    Timestamp true
+    PrintSeverity true
+</Plugin>
+
+<LoadPlugin python>
+    Globals true
+</LoadPlugin>
+
+<Plugin python>
+    ModulePath "/var/lib/collectd/python/lib/python2.7/dist-packages/"
+    Import "memsql_collectd.plugin"
+    <Module "memsql_collectd.plugin">
+        Host "<%= @collector_ip %>"
+        User "root"
+        Port "3306"
+        TypesDB "/usr/share/collectd/types.db"
+    </Module>
+</Plugin>

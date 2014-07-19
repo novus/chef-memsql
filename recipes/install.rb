@@ -17,31 +17,40 @@
 # limitations under the License.
 
 
+# Create user and group first, so we have control over uid and gid instead of leaving it to fate
+if %x(grep #{node.memsql.owner} /etc/passwd | wc -l).strip.to_i == 0
+  group node.memsql.group do
+    gid node.memsql.gid
+  end
+
+  user node.memsql.owner do
+    uid node.memsql.uid
+    group node.memsql.group
+  end
+end
+
+#TODO refactor
+filtered = node.memsql.node_scope.enabled ? node.memsql.node_scope.filter : ""
 
 #install client libs
-%w(mysql-client libmysqlclient-dev).each do |pkg|
+if node.platform_family == 'debian'
+  include_recipe 'apt::default'
+  execute 'apt-get update'
+end
+%w(g++ mysql-client libmysqlclient-dev).each do |pkg|
   package pkg do
     action :install
   end
 end
 
-#download memsql
 remote_file "#{Chef::Config[:file_cache_path]}/memsql-#{node[:memsql][:version]}" do
   source "#{node[:memsql][:url]}/#{node[:memsql][:license]}/memsql-#{node[:memsql][:version]}"
   action :create_if_missing
 end
 
-#install memsql
-dpkg_package node[:memsql][:version] do
+dpkg_package "memsql" do
   source  "#{Chef::Config[:file_cache_path]}/memsql-#{node[:memsql][:version]}"
   action :install
-end
-
-#move to mounted ec2 volume
-if !Dir.exists?('/data/memsql') and Dir.exists?('/var/lib/memsql')
-  %x(mkdir -p /data)
-  %x(mv /var/lib/memsql /data/memsql)
-  %x(ln -s /data/memsql /var/lib/memsql)
 end
 
 #start memsql
@@ -51,13 +60,10 @@ service "memsql" do
 end
 
 #find the master aggregator
-master_aggregator = search(:node, "role:memsql_master_aggregator").first
-
-#if there is none, assume single node installation, return self
-master_aggregator = master_aggregator.nil? ? node : master_aggreagtor
+master_aggregator = search(:node, "role:memsql_master_aggregator #{filtered}").first || node
 
 #find leaf nodes
-leaves = search(:node, "role:memsql_leaf")
+leaves = search(:node, "role:memsql_leaf #{filtered}")
 
 #attaches leaf to master aggregator
 leaves.each do |node|
@@ -66,20 +72,22 @@ leaves.each do |node|
   Chef::Log.info("leaf #{node["name"]} has IP address #{node["ipaddress"]}")
 end
 
-
 template "/var/lib/memsql/memsql.cnf" do
   source "memsql.cnf.erb"
   mode 0600
   owner "memsql"
   group "memsql"
   variables({
-                :master_aggregator_ip => node.run_list.roles.include?("child_aggregator") ? master_aggregator["ipaddress"] : nil,
-                :is_master => node.run_list.roles.include?("master_aggregator") ? true : false
+                :master_aggregator_ip => node.run_list.roles.include?("memsql_child_aggregator") ? master_aggregator["ipaddress"] : nil,
+                :is_master => node.run_list.roles.include?("memsql_master_aggregator") ? true : false,
+                :redundancy_level => node.memsql.redundancy_level
             })
 end
-
 
 node[:memsql][:users].each do |user|
   %x(sudo mysql -u root -h #{master_aggregator[:ipaddress]} -e "grant all on *.* to '#{user[:name]}'@'localhost' identified by '#{user[:password]}'; flush privileges;")
 end
 
+if node.memsql.ops.enabled
+  include_recipe "memsql::collectd"
+end
