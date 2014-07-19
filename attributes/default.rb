@@ -28,4 +28,3 @@ default[:memsql][:ops][:http_port] = 9000
 
 default[:memsql][:collectd][:url] = "http://download.memsql.com/ops-latest"
 default[:memsql][:collectd][:package] = "collectd-5.4.0.x86_64.deb"
->>>>>>> fork
