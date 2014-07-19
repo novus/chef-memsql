@@ -1,9 +1,10 @@
 #!/bin/bash
-BACKUP_PATH='/backups/memsql_backups/latest'
 
-BACKUP_NAME="<%=@database%>"
+BACKUP_PATH='/backups/latest'
+for DATABASE in <%=@databases.join(' ')%>; do
+BACKUP_NAME="${DATABASE}"
 
-/usr/bin/mysql -u root -h 127.0.0.1 -e "BACKUP DATABASE <%=@database%> to \"${BACKUP_PATH}/${BACKUP_NAME}\""
+/usr/bin/mysql -u root -h <%=node[:memsql][:backups][:backup_server]%> -e "BACKUP DATABASE ${DATABASE} to \"${BACKUP_PATH}/${BACKUP_NAME}\""
 
 
 CURRENT_BACKUP=`find ${BACKUP_PATH}/* -type d |tail -n 1 |cut -d / -f5`
@@ -14,4 +15,5 @@ TAR_COMMAND=`/bin/tar -czvf ./${BACKUP_NAME}.tar.gz ./${CURRENT_BACKUP}`
 
 rm -rf $CURRENT_BACKUP
 
-/opt/bin/rotate-backups.py
+done
+/backups/bin/rotate-backups.py
