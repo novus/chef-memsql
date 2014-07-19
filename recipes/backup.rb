@@ -20,10 +20,11 @@
 #create directories to hold the shellscript and backups.
 %x(sudo mkdir -p #{node[:memsql][:backups][:nfs_path]}/#{node[:memsql][:backups][:local_backup_directory]}/) if !Dir.exists?("#{node[:memsql][:backups][:nfs_path]}/#{node[:memsql][:backups][:local_backup_directory]}/")
 %x(sudo ln -s #{node[:memsql][:backups][:nfs_path]}/#{node[:memsql][:backups][:local_backup_directory]}/ /backups) if !File.exists?('/backups')
+
 %w(latest bin).each do |directory|
   if !Dir.exists?("/backups/#{directory}")
     %x(sudo mkdir -p /backups/#{directory})
-    %x(sudo chown -Rh memsql. /backups/#{directory})
+    %x(sudo chown -Rh #{node[:memsql][:owner]}.#{node[:memsql][:group]} /backups/#{directory})
   end
 end
 
