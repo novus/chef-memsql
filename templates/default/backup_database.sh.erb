@@ -6,14 +6,13 @@ BACKUP_NAME="${DATABASE}"
 
 /usr/bin/mysql -u root -h <%=node[:memsql][:backups][:backup_server]%> -e "BACKUP DATABASE ${DATABASE} to \"${BACKUP_PATH}/${BACKUP_NAME}\""
 
-
-CURRENT_BACKUP=`find ${BACKUP_PATH}/* -type d |tail -n 1 |cut -d / -f5`
+CURRENT_BACKUP="${BACKUP_PATH}/${BACKUP_NAME}"
 
 cd $BACKUP_PATH
 
-TAR_COMMAND=`/bin/tar -czvf ./${BACKUP_NAME}.tar.gz ./${CURRENT_BACKUP}`
+TAR_COMMAND=`/bin/tar -czvf ./${BACKUP_NAME}.tar.gz ./${BACKUP_NAME}`
 
-rm -rf $CURRENT_BACKUP
+rm -rf ./${CURRENT_NAME}
 
 done
 /backups/bin/rotate-backups.py
