@@ -18,33 +18,47 @@
 
 
 #create directories to hold the shellscript and backups.
+%x(sudo mkdir -p #{node[:memsql][:backups][:nfs_path]}/#{node[:memsql][:backups][:local_backup_directory]}/) if !Dir.exists?("#{node[:memsql][:backups][:nfs_path]}/#{node[:memsql][:backups][:local_backup_directory]}/")
+%x(sudo ln -s #{node[:memsql][:backups][:nfs_path]}/#{node[:memsql][:backups][:local_backup_directory]}/ /backups) if !File.exists?('/backups')
+
 %w(latest bin).each do |directory|
-  if !Dir.exists?("/backups/memsql_backups/#{directory}")
-    %x(mkdir -p /backups/memsql_backups/#{directory})
-    %x(chown -Rh memsql. /backups/memsql_backups)
+  if !Dir.exists?("/backups/#{directory}")
+    %x(sudo mkdir -p /backups/#{directory})
+    %x(sudo chown -Rh #{node[:memsql][:owner]}.#{node[:memsql][:group]} /backups/#{directory})
   end
 end
 
+if %x(hostname).strip == node[:memsql][:backups][:backup_server]
 #loop over the databases to configure cron and create the backup script from the template
-node[:memsql][:backups][:databases].each do |database|
 
-  template "/backups/memsql_backups/bin/backup-#{database}.sh" do
+  template "/backups/bin/backup-databases.sh" do
     source "backup_database.sh.erb"
     mode 0755
     owner "memsql"
     group "memsql"
-    variables ({:database => database})
+    variables ({:databases => node[:memsql][:backups][:databases]})
   end
 
+  template "/backups/bin/rotate-backups.py" do
+    source "rotate-backups.py.erb"
+    owner "root"
+    group "root"
+    mode 755
+  end
 
+  template "/etc/default/rotate-backups" do
+    source "rotate-backups.erb"
+    owner "root"
+    group "root"
+  end
 
-  cron "memsql #{database} backup" do
+  cron "memsql backup" do
     hour '*'
-    minute '0,30'
+    minute '0'
     weekday '*'
-    command "/backups/memsql_backups/bin/backup-#{database}.sh"
+    command "/backups/bin/backup-databases.sh"
   end
-
-
-
 end
+
+
+

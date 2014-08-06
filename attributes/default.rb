@@ -16,7 +16,8 @@ default[:memsql][:backups][:databases] = []
 default[:memsql][:backups][:nfs_host] = nil
 default[:memsql][:backups][:nfs_path] = nil
 default[:memsql][:backups][:remote_mount_path] = nil
-
+default[:memsql][:backups][:backup_server] = nil
+default[:memsql][:backups][:local_backup_directory] = "memsql_backups"
 # memsql-ops
 
 default[:memsql][:ops][:enabled] = false
