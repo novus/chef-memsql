@@ -3,7 +3,7 @@ default[:memsql][:group] = node.memsql.owner
 default[:memsql][:uid] = 2027
 default[:memsql][:gid] = node.memsql.uid
 default[:memsql][:license] = nil
-default[:memsql][:version] = "2.6.x86_64.deb"
+default[:memsql][:version] = "3.1.x86_64.deb"
 default[:memsql][:redundancy_level] = 1
 default[:memsql][:url] = "http://download.memsql.com"
 default[:memsql][:users] = [{:name => 'developer', :password => 'password'}]

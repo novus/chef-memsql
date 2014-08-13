@@ -39,7 +39,7 @@ if node.platform_family == 'debian'
 end
 %w(g++ mysql-client libmysqlclient-dev).each do |pkg|
   package pkg do
-    action :install
+    action [:install, :upgrade]
   end
 end
 
@@ -50,13 +50,13 @@ end
 
 dpkg_package "memsql" do
   source  "#{Chef::Config[:file_cache_path]}/memsql-#{node[:memsql][:version]}"
-  action :install
+  action [:install, :upgrade]
 end
 
 #start memsql
 service "memsql" do
   supports :status => true, :restart => true, :reload => true, :start => true, :stop => true
-  action [ :enable, :start ]
+  action [:enable, :start]
 end
 
 #find the master aggregator
