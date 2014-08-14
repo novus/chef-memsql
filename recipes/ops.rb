@@ -26,7 +26,7 @@ end
 
 dpkg_package 'ops' do
   source ops_pkg
-  action :install
+  action [:install, :upgrade]
 end
 
 #find the master aggregator
