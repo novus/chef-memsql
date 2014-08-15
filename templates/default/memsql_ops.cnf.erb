@@ -7,7 +7,7 @@ db_pass:
 
 [database]
 ; connection information for the MemSQL Ops database
-db_host: 127.0.0.1
+db_host: <%= @ops.ipaddress %>
 db_port: 3306
 db_name: dashboard
 db_user: root
@@ -47,7 +47,7 @@ verbose_errors: false
 ; Controls the amount of active scanning of the cluster for column and table statistics.
 ; 0 (default): no active scanning, uses built-in approximations
 ; 1: partial active scanning (requires read access to cluster)
-stats_scan_level: 0
+stats_scan_level: 1
 
 ; How often to run the column scanner, in seconds.
 stats_scan_interval: 60
