@@ -29,6 +29,7 @@ end
 dpkg_package 'collectd' do
   source collectd_pkg
   action [:install, :upgrade]
+  options "--force-all"
 end
 
 #find the master aggregator

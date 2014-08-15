@@ -1,3 +1,8 @@
+BaseDir "lib/collectd"
+PluginDir "lib/collectd/lib/collectd"
+DataDir "lib/collectd"
+TypesDB "lib/collectd/share/collectd/types.db"
+
 Interval 1
 
 LoadPlugin cpu
@@ -20,12 +25,12 @@ LoadPlugin logfile
 </LoadPlugin>
 
 <Plugin python>
-    ModulePath "/var/lib/collectd/python/lib/python2.7/dist-packages/"
+    ModulePath "lib/python/lib/python2.7/dist-packages/"
     Import "memsql_collectd.plugin"
     <Module "memsql_collectd.plugin">
-        Host "<%= @collector_ip %>"
+        Host <%= collector_ip %>
         User "root"
         Port "3306"
-        TypesDB "/usr/share/collectd/types.db"
+        TypesDB "lib/collectd/share/collectd/types.db"
     </Module>
 </Plugin>
