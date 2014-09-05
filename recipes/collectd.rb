@@ -37,7 +37,7 @@ ops_collector = search(:node, "role:memsql_ops #{filtered}").first || node
 master_aggregator = search(:node, "role:memsql_master_aggregator #{filtered}").first || nil
 standalone = node.run_list.roles.include?("memsql_standalone")
 
-if (node == ops_collector) && !standalone && !master_aggregator
+if (node.ipaddress == ops_collector.ipaddress) && !standalone && !master_aggregator
   service "collectd" do
     action [ :disable, :stop ]
   end
