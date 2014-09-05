@@ -34,20 +34,26 @@ end
 
 filtered = node.memsql.node_scope.enabled ? node.memsql.node_scope.filter : ""
 ops_collector = search(:node, "role:memsql_ops #{filtered}").first || node
+master_aggregator = search(:node, "role:memsql_master_aggregator #{filtered}").first || nil
+standalone = node.run_list.roles.include?("memsql_standalone")
 
-standalone = node.run_list.roles.include?("memsql_standalone") ? node : nil
+if (node == ops_collector) && !standalone && !master_aggregator
+  service "collectd" do
+    action [ :disable, :stop ]
+  end
+else
+  template "/etc/collectd.conf" do
+    source "collectd.conf.erb"
+    mode 0640
+    variables({
+                  :collector_ip => standalone ? node.ipaddress : ops_collector.ipaddress
+    })
+    notifies :restart, "service[collectd]"
+  end
 
-template "/etc/collectd.conf" do
-  source "collectd.conf.erb"
-  mode 0640
-  variables({
-                :collector_ip => standalone ? node.ipaddress : ops_collector.ipaddress
-  })
-  notifies :restart, "service[collectd]"
-end
-
-#start collectd
-service "collectd" do
-  supports :status => true, :restart => true, :reload => true, :start => true, :stop => true
-  action [ :enable, :start ]
+  #start collectd
+  service "collectd" do
+    supports :status => true, :restart => true, :reload => true, :start => true, :stop => true
+    action [ :enable, :start ]
+  end
 end
