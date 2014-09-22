@@ -91,3 +91,10 @@ end
 if node.memsql.ops.enabled
   include_recipe "memsql::collectd"
 end
+
+logrotate_app 'memsqld' do
+  path '/var/lib/memsql/tracelogs/*.log'
+  rotate 7
+  options %w(missingok sharedscripts compress)
+  postrotate ['killall -q -s1 memsqld']
+end
