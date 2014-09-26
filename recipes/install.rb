@@ -94,6 +94,7 @@ end
 
 if node.memsql.backups.nfs_host && memsql.backups.nfs_path
   include_recipe "memsql::nfs"
+  include_recipe "memsql::backup"
 end
 
 logrotate_app 'memsqld' do
