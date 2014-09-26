@@ -92,7 +92,7 @@ if node.memsql.ops.enabled
   include_recipe "memsql::collectd"
 end
 
-if node.memsql.backups.nfs_host && memsql.backups.nfs_path
+if node.memsql.backups.nfs_host && node.memsql.backups.nfs_path
   include_recipe "memsql::nfs"
   include_recipe "memsql::backup"
 end
