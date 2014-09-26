@@ -16,15 +16,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+include_recipe "memsql::nfs"
 
 #create directories to hold the shellscript and backups.
 %x(sudo mkdir -p #{node[:memsql][:backups][:nfs_path]}/#{node[:memsql][:backups][:local_backup_directory]}/) if !Dir.exists?("#{node[:memsql][:backups][:nfs_path]}/#{node[:memsql][:backups][:local_backup_directory]}/")
 %x(sudo ln -s #{node[:memsql][:backups][:nfs_path]}/#{node[:memsql][:backups][:local_backup_directory]}/ /backups) if !File.exists?('/backups')
 
 %w(latest bin).each do |directory|
-  if !Dir.exists?("/backups/#{directory}")
-    %x(sudo mkdir -p /backups/#{directory})
-    %x(sudo chown -Rh #{node[:memsql][:owner]}.#{node[:memsql][:group]} /backups/#{directory})
+  directory "/backups/#{directory}" do
+    owner "memsql"
+    grou "memsql"
   end
 end
 
