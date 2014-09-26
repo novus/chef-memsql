@@ -4,7 +4,7 @@ if %x(grep #{node[:memsql][:backups][:nfs_host]} /etc/mtab |wc -l).strip.to_i ==
   puts "#{node[:memsql][:backups][:nfs_host]} not found, creating directories"
   %x(sudo mkdir -p #{node[:memsql][:backups][:nfs_path]})
   puts "#{node[:memsql][:backups][:nfs_path]} created"
-  %x(sudo mount #{node[:memsql][:backups][:nfs_host]}:/#{node[:memsql][:backups][:remote_mount_path]} #{node[:memsql][:backups][:nfs_path]})
+  %x(sudo mount -o rw,nfsvers=3 #{node[:memsql][:backups][:nfs_host]}:/#{node[:memsql][:backups][:remote_mount_path]} #{node[:memsql][:backups][:nfs_path]})
   puts "#{node[:memsql][:backups][:nfs_host]}:/#{node[:memsql][:backups][:remote_mount_path]} #{node[:memsql][:backups][:nfs_path]} mounted"
   %x(sudo mkdir -p #{node[:memsql][:backups][:nfs_path]}/)
   %x(sudo chown -Rh #{node[:memsql][:owner]}.#{node[:memsql][:group]} #{node[:memsql][:backups][:nfs_path]}/backups)
