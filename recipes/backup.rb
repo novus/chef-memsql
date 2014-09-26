@@ -25,7 +25,7 @@ include_recipe "memsql::nfs"
 %w(latest bin).each do |directory|
   directory "/backups/#{directory}" do
     owner "memsql"
-    grou "memsql"
+    group "memsql"
   end
 end
 
