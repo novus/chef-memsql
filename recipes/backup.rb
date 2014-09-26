@@ -26,7 +26,7 @@ include_recipe "memsql::nfs"
   directory "/backups/#{directory}" do
     owner "memsql"
     group "memsql"
-    recusrive true
+    recursive true
   end
 end
 
