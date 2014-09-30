@@ -17,6 +17,8 @@
 # limitations under the License.
 #        node.run_list.roles.include?('base')
 
+default["novus_dns"]["client"]["cnames"] << ["memsql-ops.#{domain}"]
+
 ops_pkg = "#{Chef::Config[:file_cache_path]}/#{node[:memsql][:ops][:package]}"
 
 remote_file ops_pkg do
