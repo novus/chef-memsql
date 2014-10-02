@@ -46,6 +46,7 @@ end
 remote_file "#{Chef::Config[:file_cache_path]}/memsql-#{node[:memsql][:version]}" do
   source "#{node[:memsql][:url]}/#{node[:memsql][:license]}/memsql-#{node[:memsql][:version]}"
   action :create_if_missing
+  notify :install, "dpkg_package", :immediately
 end
 
 dpkg_package "memsql" do
