@@ -46,7 +46,7 @@ end
 remote_file "#{Chef::Config[:file_cache_path]}/memsql-#{node[:memsql][:version]}" do
   source "#{node[:memsql][:url]}/#{node[:memsql][:license]}/memsql-#{node[:memsql][:version]}"
   action :create_if_missing
-  #notify :install, "dpkg_package", :immediately
+  notifies :install, "dpkg_package[memsql]", :immediately
 end
 
 dpkg_package "memsql" do
@@ -60,7 +60,8 @@ service "memsql" do
   action [:enable, :start]
 end
 
-#find the master aggregator
+#find the master aggregatorggpnp
+
 master_aggregator = search(:node, "role:memsql_master_aggregator #{filtered}").first || node
 
 #find leaf nodes
