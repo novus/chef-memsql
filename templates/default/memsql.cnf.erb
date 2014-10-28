@@ -32,7 +32,8 @@ lock_wait_timeout   = 60
 bind-address        = 0.0.0.0
 max-connections     = 8192
 core-file
-critical-diagnostics = off
+critical-diagnostics  = off
+skip-name-resolve     = true
 <%= @is_master ? "master-aggregator" : "" %>
 <%= @is_master ? "redundancy_level = #{@redundancy_level}" : ""%>
 <%= !@master_aggregator_ip.nil? ? "master-aggregator = #{@master_aggregator_ip}" : ""%>
