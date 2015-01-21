@@ -23,11 +23,6 @@ basedir = node.memsql.backups.basedir
 bindir  = "#{basedir}/bin"
 latest  = "#{basedir}/latest"
 
-directory basedir do
-  owner "memsql"
-  group "memsql"
-end
-
 mount basedir do
   device "#{node.memsql.backups.nfs_volume}/#{node.environment}"
   fstype "nfs"
