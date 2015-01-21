@@ -2,7 +2,7 @@
 # Cookbook Name:: memsql
 # Recipe:: default
 #
-# Copyright 2014, Chris Molle
+# Copyright 2014-2015, Chris Molle, Steve Koppelman
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,49 +16,72 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-include_recipe "memsql::nfs"
+backup_server = node.memsql.backups.backup_server
 
-#create directories to hold the shellscript and backups.
-%x(sudo mkdir -p #{node[:memsql][:backups][:nfs_path]}/#{node[:memsql][:backups][:local_backup_directory]}/) if !Dir.exists?("#{node[:memsql][:backups][:nfs_path]}/#{node[:memsql][:backups][:local_backup_directory]}/")
-%x(sudo ln -s #{node[:memsql][:backups][:nfs_path]}/#{node[:memsql][:backups][:local_backup_directory]}/ /backups) if !File.exists?('/backups')
+# Create directories to hold the shellscript and backups.
+basedir = node.memsql.backups.basedir
+bindir  = "#{basedir}/bin"
+latest  = "#{basedir}/latest"
+
+directory basedir do
+  owner "memsql"
+  group "memsql"
+end
+
+mount basedir do
+  device "#{node.memsql.backups.nfs_volume}/#{node.environment}"
+  fstype "nfs"
+  options "rw"
+  action [:mount, :enable]
+end
 
 %w(latest bin).each do |directory|
-  directory "/backups/#{directory}" do
+  directory "#{basedir}/#{directory}" do
     owner "memsql"
     group "memsql"
   end
 end
 
-if %x(hostname).strip == node[:memsql][:backups][:backup_server]
-#loop over the databases to configure cron and create the backup script from the template
+template_variables = {
+  :databases => node[:memsql][:backups][:databases],
+  :latest => latest,
+  :bindir => bindir,
+  :basedir => basedir,
+}
 
-  template "/backups/bin/backup-databases.sh" do
+# Am I the node assigned to run backups for my cluster? (Usually master aggregator)
+if %x(hostname).strip == backup_server
+
+  #loop over the databases to configure cron and create the backup script from the template
+  template "#{bindir}/backup-databases.sh" do
     source "backup_database.sh.erb"
     mode 0755
     owner "memsql"
     group "memsql"
-    variables ({:databases => node[:memsql][:backups][:databases]})
+    variables template_variables
   end
 
-  template "/backups/bin/rotate-backups.py" do
+  template "#{bindir}/rotate-backups.py" do
     source "rotate-backups.py.erb"
     owner "root"
     group "root"
     mode 755
+    variables template_variables
   end
 
   template "/etc/default/rotate-backups" do
     source "rotate-backups.erb"
     owner "root"
     group "root"
-  end
+    variables template_variables
+ end
 
-  cron "memsql backup" do
-    hour '*'
-    minute '0'
-    weekday '*'
-    command "/backups/bin/backup-databases.sh"
-  end
+  # cron "memsql backup" do
+  #   hour '*'
+  #   minute '0'
+  #   weekday '*'
+  #   command "#{bindir}/backup-databases.sh"
+  # end
 end
 
 

@@ -11,13 +11,12 @@ default[:memsql][:node_scope][:enabled] = true
 default[:memsql][:node_scope][:filter] = " AND chef_environment:#{node.chef_environment}"
 
 # Backups
-
+default[:memsql][:backups][:nfs_volume] = nil
+default[:memsql][:backups][:basedir] = '/backups'
 default[:memsql][:backups][:databases] = []
-default[:memsql][:backups][:nfs_host] = nil
-default[:memsql][:backups][:nfs_path] = nil
-default[:memsql][:backups][:remote_mount_path] = nil
 default[:memsql][:backups][:backup_server] = nil
 default[:memsql][:backups][:local_backup_directory] = "memsql_backups"
+
 # memsql-ops
 
 default[:memsql][:ops][:enabled] = false

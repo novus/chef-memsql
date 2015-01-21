@@ -1,6 +1,6 @@
 [Settings]
-backups_dir = /backups/latest/
-archives_dir = /backups/archives/
+backups_dir = <%= @latest %>
+archives_dir = <%= @basedir %>/archives/
 hourly_backup_hour = 23
 weekly_backup_day = 6
 max_weekly_backups = 4
