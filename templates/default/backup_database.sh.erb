@@ -1,6 +1,6 @@
 #!/bin/bash
 
-BACKUP_PATH='<%= @latest $>'
+BACKUP_PATH='<%= @latest %>'
 CURRENT_BACKUP="${BACKUP_PATH}/${BACKUP_NAME}"
 
 for DATABASE in <%= @databases.join(' ') %>; do
