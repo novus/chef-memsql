@@ -30,7 +30,7 @@ mount basedir do
   action [:mount, :enable]
 end
 
-[latest bindir].each do |dir|
+[latest, bindir].each do |dir|
   directory dir do
     owner "memsql"
     group "memsql"
