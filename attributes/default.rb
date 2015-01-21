@@ -15,7 +15,6 @@ default[:memsql][:backups][:nfs_volume] = nil
 default[:memsql][:backups][:basedir] = '/backups'
 default[:memsql][:backups][:databases] = []
 default[:memsql][:backups][:backup_server] = nil
-default[:memsql][:backups][:local_backup_directory] = "memsql_backups"
 
 # memsql-ops
 
