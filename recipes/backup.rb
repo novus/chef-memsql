@@ -38,8 +38,6 @@ end
 ["latest", "bindir"].each do |dir|
   directory "backup-#{dir}" do
     path "#{basedir}/#{dir}"
-    owner "memsql"
-    group "memsql"
   end
 end
 

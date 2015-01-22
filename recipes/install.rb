@@ -95,7 +95,7 @@ if node.memsql.ops.enabled
 end
 
 if node.memsql.backups.nfs_volume && node.memsql.backups.backup_server
-  include_recipe "memsql::backup"
+  #include_recipe "memsql::backup"
 end
 
 logrotate_app 'memsqld' do
