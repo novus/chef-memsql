@@ -35,9 +35,10 @@ mount basedir do
   action [:mount, :enable]
 end
 
-["latest", "bindir"].each do |dir|
-  directory "backup-#{dir}" do
-    path "#{basedir}/#{dir}"
+[latest, bindir].each do |dir|
+  directory dir do
+    owner "memsql"
+    group "memsql"
   end
 end
 
