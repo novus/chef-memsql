@@ -31,7 +31,7 @@ end
 mount basedir do
   device "#{node.memsql.backups.nfs_volume}/#{node.environment}"
   fstype "nfs"
-  options "rw"
+  options "rw,hard,vers=3,timeo=3,retrans=10,rsize=32768,wsize=32768"
   action [:mount, :enable]
 end
 
