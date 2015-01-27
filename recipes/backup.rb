@@ -44,6 +44,7 @@ end
 
 template_variables = {
   :databases => node[:memsql][:backups][:databases],
+  :backup_server => node.memsql.backups.backup_server,
   :latest => latest,
   :bindir => bindir,
   :basedir => basedir,
@@ -56,8 +57,8 @@ if %x(hostname).strip == backup_server
   template "#{bindir}/backup-databases.sh" do
     source "backup_database.sh.erb"
     mode 0755
-    owner "memsql"
-    group "memsql"
+    owner "root"
+    group "root"
     variables template_variables
   end
 
