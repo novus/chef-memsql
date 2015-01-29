@@ -6,6 +6,8 @@ for DATABASE in <%= @databases.join(' ') %>; do
   BACKUP_NAME="${DATABASE}"
   CURRENT_BACKUP="${BACKUP_PATH}/${BACKUP_NAME}"
 
+  mkdir -p ${CURRENT_BACKUP}
+
   /usr/bin/mysql -u root -h <%= @backup_server %> -e \
     "BACKUP DATABASE ${DATABASE} to \"${CURRENT_BACKUP}\""
 
