@@ -84,12 +84,13 @@ if %x(hostname).strip == backup_server
     variables template_variables
  end
 
-  # cron "memsql backup" do
-  #   hour '*'
-  #   minute '0'
-  #   weekday '*'
-  #   command "#{bindir}/backup-databases.sh"
-  # end
+  cron "memsql backup" do
+    hour '*'
+    minute '0'
+    weekday '*'
+    command "#{bindir}/backup-databases.sh"
+  end
+
 end
 
 
