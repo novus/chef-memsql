@@ -85,7 +85,7 @@ if %x(hostname).strip == backup_server
  end
 
   cron "memsql backup" do
-    hour '*'
+    hour '10'
     minute '0'
     weekday '*'
     command "#{bindir}/backup-databases.sh"
