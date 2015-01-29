@@ -42,6 +42,13 @@ end
   end
 end
 
+node.memsql.backups.databases.each do |d|
+  directory "#{latest}/#{d}"
+    owner "memsql"
+    group "memsql"
+  end
+end
+
 template_variables = {
   :databases => node[:memsql][:backups][:databases],
   :backup_server => node.memsql.backups.backup_server,
