@@ -43,7 +43,7 @@ end
 end
 
 node.memsql.backups.databases.each do |d|
-  directory "#{latest}/#{d}"
+  directory "#{latest}/#{d}" do
     owner "memsql"
     group "memsql"
   end
