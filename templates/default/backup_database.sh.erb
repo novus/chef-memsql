@@ -12,7 +12,7 @@ for DATABASE in <%= @databases.join(' ') %>; do
   cd $BACKUP_PATH
 
   TAR_COMMAND=`tar -czvf ./${BACKUP_NAME}.tar.gz ./${BACKUP_NAME}`
-  rm -rf ./${CURRENT_BACKUP}
+  rm -rf  ${CURRENT_BACKUP}
 done
 
 <%= @bindir %>/rotate-backups.py
