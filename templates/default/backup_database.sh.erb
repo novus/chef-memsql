@@ -1,10 +1,10 @@
 #!/bin/bash
 
 BACKUP_PATH='<%= @latest %>'
-CURRENT_BACKUP="${BACKUP_PATH}/${BACKUP_NAME}"
 
 for DATABASE in <%= @databases.join(' ') %>; do
   BACKUP_NAME="${DATABASE}"
+  CURRENT_BACKUP="${BACKUP_PATH}/${BACKUP_NAME}"
 
   /usr/bin/mysql -u root -h <%= @backup_server %> -e \
     "BACKUP DATABASE ${DATABASE} to \"${CURRENT_BACKUP}\""
