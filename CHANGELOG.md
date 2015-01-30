@@ -1,13 +1,20 @@
 memsql CHANGELOG
 ================
 
-This file is used to list changes made in each version of the memsql cookbook.
-
-0.1.0
+0.2.0
 -----
-- [your_name] - Initial release of memsql
+- Steve Koppelman - First official `novus/chef-memsql` release. Significant breaking changes
+  to the way backup is set up.
+
+0.1.4 (`novus/chef-memsql` fork)
+-----
+- Steve Koppelman - Enhancements and partial rewrites.
+-- Opinionated use of roles to self-organize clusters.
+-- More parameterization
+
+  0.1.0 - 0.1.4
+-------------
+- Chris Molle - Original version, `npchris/chef-memsql`
 
 - - -
-Check the [Markdown Syntax Guide](http://daringfireball.net/projects/markdown/syntax) for help with Markdown.
 
-The [Github Flavored Markdown page](http://github.github.com/github-flavored-markdown/) describes the differences between markdown on github and standard markdown.
