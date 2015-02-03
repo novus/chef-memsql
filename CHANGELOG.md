@@ -9,8 +9,8 @@ memsql CHANGELOG
 0.1.4 (`novus/chef-memsql` fork)
 -----
 - Steve Koppelman - Enhancements and partial rewrites.
--- Opinionated use of roles to self-organize clusters.
--- More parameterization
+  - Opinionated use of roles to self-organize clusters.
+  - More parameterization
 
   0.1.0 - 0.1.4
 -------------

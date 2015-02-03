@@ -10,13 +10,16 @@ default[:memsql][:users] = [{:name => 'developer', :password => 'password'}]
 default[:memsql][:node_scope][:enabled] = true
 default[:memsql][:node_scope][:filter] = " AND chef_environment:#{node.chef_environment}"
 
-# Backups
-default[:memsql][:backups][:nfs_volume] = nil
-default[:memsql][:backups][:basedir] = '/backups'
-default[:memsql][:backups][:databases] = []
-default[:memsql][:backups][:backup_server] = nil
+### Backups
+# If all of these attributes are populated in the environment/role, backup
+# will be set up automatically
 
-# memsql-ops
+default[:memsql][:backups][:nfs_volume] = nil       # NFS URL "HOST:/EXPORT_PATH"
+default[:memsql][:backups][:basedir] = '/backups'   # Mount point
+default[:memsql][:backups][:databases] = []         # Array of database names
+default[:memsql][:backups][:backup_server] = nil    # FQDN
+
+### memsql-ops
 
 default[:memsql][:ops][:enabled] = false
 default[:memsql][:ops][:url] = 'http://download.memsql.com/ops-3.1.2'
