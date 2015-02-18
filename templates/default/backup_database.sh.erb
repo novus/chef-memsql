@@ -1,18 +1,17 @@
 #!/bin/bash
 
 BACKUP_PATH='<%= @latest %>'
+DATABSE='<%= @database %>'
 
-for DATABASE in <%= @databases.join(' ') %>; do
-  BACKUP_NAME="${DATABASE}"
-  CURRENT_BACKUP="${BACKUP_PATH}/${BACKUP_NAME}"
+BACKUP_NAME="${DATABASE}"
+CURRENT_BACKUP="${BACKUP_PATH}/${BACKUP_NAME}"
 
-  /usr/bin/mysql -u root -h <%= @backup_server %> -e \
-    "BACKUP DATABASE ${DATABASE} to \"${CURRENT_BACKUP}\""
+/usr/bin/mysql -u root -h <%= @backup_server %> -e \
+  "BACKUP DATABASE ${DATABASE} to \"${CURRENT_BACKUP}\""
 
-  cd $BACKUP_PATH
+cd $BACKUP_PATH
 
-  TAR_COMMAND=`tar -czvf ./${BACKUP_NAME}.tar.gz ./${BACKUP_NAME}`
-  rm -rf  ${CURRENT_BACKUP}
-done
+TAR_COMMAND=`tar -czvf ./${BACKUP_NAME}.tar.gz ./${BACKUP_NAME}`
+rm -rf  ${CURRENT_BACKUP}
 
 <%= @bindir %>/rotate-backups.py

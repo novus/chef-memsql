@@ -16,12 +16,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-backup_server = node.memsql.backups.backup_server
+attrib = node.memsql.backups
+backup_server = attrib.backup_server
 
 # Create directories to hold the shellscript and backups.
-basedir = node.memsql.backups.basedir
-bindir  = "#{basedir}/bin"
-latest  = "#{basedir}/latest"
+basedir   = attrib.basedir
+bindir    = "#{basedir}/bin"
+latest    = "#{basedir}/latest"
+databases = attrib.databases
+overrides = {}
 
 directory basedir do
   owner "memsql"
@@ -29,7 +32,7 @@ directory basedir do
 end
 
 mount basedir do
-  device "#{node.memsql.backups.nfs_volume}/#{node.environment}"
+  device "#{attrib.nfs_volume}/#{node.environment}"
   fstype "nfs"
   options "rw,hard,vers=3,timeo=3,retrans=10,rsize=32768,wsize=32768"
   action [:mount, :enable]
@@ -42,55 +45,104 @@ end
   end
 end
 
-node.memsql.backups.databases.each do |d|
-  directory "#{latest}/#{d}" do
+databases.each do |d|
+  db = d.is_a?(String) ? d : d.keys[0]
+  directory "#{latest}/#{db}" do
     owner "memsql"
     group "memsql"
   end
 end
 
-template_variables = {
-  :databases => node[:memsql][:backups][:databases],
-  :backup_server => node.memsql.backups.backup_server,
+base_template_variables = {
+  :databases => databases,
+  :backup_server => backup_server,
   :latest => latest,
   :bindir => bindir,
   :basedir => basedir,
+  :hours => attrib.hours,
+  :hourly_backup_hour => attrib.hourly_backup_hour,
+  :weekly_backup_day => attrib.weekly_backup_day,
+  :max_weekly_backups => attrib.max_weekly_backups
 }
 
 # Am I the node assigned to run backups for my cluster? (Usually master aggregator)
 if %x(hostname).strip == backup_server
 
-  #loop over the databases to configure cron and create the backup script from the template
+  # cleanup
   template "#{bindir}/backup-databases.sh" do
     source "backup_database.sh.erb"
-    mode 0755
-    owner "root"
-    group "root"
-    variables template_variables
+    action :delete
   end
-
-  template "#{bindir}/rotate-backups.py" do
-    source "rotate-backups.py.erb"
-    owner "root"
-    group "root"
-    mode 755
-    variables template_variables
-  end
-
-  template "/etc/default/rotate-backups" do
-    source "rotate-backups.erb"
-    owner "root"
-    group "root"
-    variables template_variables
- end
 
   cron "memsql backup" do
-    hour '10'
-    minute '0'
-    weekday '*'
-    command "#{bindir}/backup-databases.sh"
+    action :delete
   end
+  cron "rotate memsql backups" do
+    action :delete
+  end
+  file "/etc/default/rotate-backups" do
+    action :delete
+  end
+  # end cleanup
 
+
+  # loop over the databases to configure cron and create the backup script from the template
+  # Each element of the array can be either a string (using uniform settings) or a hash
+  # (which can include overrides to any memsql.backups subattributes).
+  databases.each do |d|
+    if d.is_a?(String)
+      db = d
+      overrides[db] = {}
+    elsif d.is_a?(Hash)
+      db = d.keys[0]
+      overrides[db] = d.values[0]
+      log.info "==> #{db} is a hash with #{overrides[db].inspect}"
+    end
+
+   template_variables = base_template_variables.merge(overrides[db])
+
+   template_variables['database'] = db
+   backup_script = "#{bindir}/backup-database-#{db}.sh"
+   rotate_config = "/etc/default/rotate-backups.#{db}"
+   rotate_script = "#{bindir}/rotate-backups-#{db}.py"
+
+   template backup_script do
+     source "backup_database.sh.erb"
+     mode 0755
+     owner "root"
+     group "root"
+     variables template_variables
+   end
+
+   template rotate_config do
+     source "rotate-backups.erb"
+     owner "root"
+     group "root"
+     variables template_variables
+   end
+
+   template rotate_script do
+     source "rotate-backups.py.erb"
+     owner "root"
+     group "root"
+     mode 755
+     variables template_variables
+   end
+
+   cron "rotate memsql backups for #{db}" do
+     hour '*'
+     minute '30'
+     weekday '*'
+     command rotate_script
+   end
+
+   cron "memsql backup #{db}" do
+     hour "#{attrib.hours}"
+     minute '0'
+     weekday '*'
+     command backup_script
+   end
+  end
 end
 
 

@@ -14,10 +14,14 @@ default[:memsql][:node_scope][:filter] = " AND chef_environment:#{node.chef_envi
 # If all of these attributes are populated in the environment/role, backup
 # will be set up automatically
 
-default[:memsql][:backups][:nfs_volume] = nil       # NFS URL "HOST:/EXPORT_PATH"
-default[:memsql][:backups][:basedir] = '/backups'   # Mount point
-default[:memsql][:backups][:databases] = []         # Array of database names
-default[:memsql][:backups][:backup_server] = nil    # FQDN
+default[:memsql][:backups][:nfs_volume] = nil         # NFS URL "HOST:/EXPORT_PATH"
+default[:memsql][:backups][:basedir] = '/backups'     # Mount point
+default[:memsql][:backups][:databases] = []           # Array of database names
+default[:memsql][:backups][:backup_server] = nil      # FQDN
+default[:memsql][:backups][:hourly_backup_hour] = 10  # Make sure a backup takes place at LEAST at this hour
+default[:memsql][:backups][:weekly_backup_day] = 6    # 0-6 Mon-Sun
+default[:memsql][:backups][:max_weekly_backups] = 10  #
+default[:memsql][:backups][:hours] = "*"              # cron expression
 
 ### memsql-ops
 

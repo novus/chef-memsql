@@ -1,0 +1,27 @@
+---
+driver:
+  name: vagrant
+
+provisioner:
+  name: chef_zero
+  environments_path: "/Users/skoppelman/Development/novus-chef-repo/environments"
+  roles_path: "/Users/skoppelman/Development/novus-chef-repo/roles"
+  client_rb:
+    environment: qa_al1
+
+platforms:
+  - name: ubuntu-12.04
+
+suites:
+  - name: default
+    run_list:
+      - recipe[memsql::install]
+      - recipe[memsql::backup]
+    attributes:
+      memsql:
+        license: "152c9ff02cc74c7983c02bb215d05401"
+        backups:
+          backup_server: 'default-ubuntu-1204'
+          nfs_volume: "eqlfs01-sec-prod:/memsql_backup"
+          databases: ['analytics', private_data: {hours: '*/2'}]
+

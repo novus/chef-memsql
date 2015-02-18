@@ -49,10 +49,10 @@ remote_file "#{Chef::Config[:file_cache_path]}/memsql-#{node[:memsql][:version]}
   #notifies :install, "dpkg_package[memsql]", :immediately
 end
 
-# dpkg_package "memsql" do
-#   source  "#{Chef::Config[:file_cache_path]}/memsql-#{node[:memsql][:version]}"
-#   action [:install, :upgrade]
-# end
+dpkg_package "memsql" do
+  source  "#{Chef::Config[:file_cache_path]}/memsql-#{node[:memsql][:version]}"
+  action [:install, :upgrade]
+end
 
 #start memsql
 service "memsql" do

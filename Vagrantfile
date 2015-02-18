@@ -69,17 +69,16 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # to skip installing and copying to Vagrant's shelf.
   # config.berkshelf.except = []
 
-  config.vm.provision :chef_solo do |chef|
-    chef.json = {
-      mysql: {
-        server_root_password: 'rootpass',
-        server_debian_password: 'debpass',
-        server_repl_password: 'replpass'
-      }
-    }
+  # config.chef_zero.chef_repo_path = "../novus-chef-repo"
+  # config.chef_zero.enable = true
 
-    chef.run_list = [
-        "recipe[memsql::default]"
-    ]
-  end
+  # config.vm.provision :chef_zero do |chef|
+  #   chef.json = {
+  #     mysql: {
+  #       server_root_password: 'rootpass',
+  #       server_debian_password: 'debpass',
+  #       server_repl_password: 'replpass'
+  #     }
+  #   }
+  # end
 end
