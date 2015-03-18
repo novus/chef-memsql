@@ -15,11 +15,11 @@ db_pass:
 
 [analytics]
 ; how many hours of analytics data should be kept?
-retention: 6
+retention: <%= @ops[:retention] %>
 ; how many hours of event data should be kept?
-events_retention: 6
+events_retention: <%= @ops[:events_retention] %>
 ; how many hours of facts data should be kept?
-facts_retention: 6
+facts_retention: <%= @ops[:facts_retention] %>
 
 ; if you set a collectd prefix in the memsql-collectd plugin
 ; set it here as well:

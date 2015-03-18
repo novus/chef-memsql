@@ -94,9 +94,9 @@ if %x(hostname).strip == backup_server
       db = d
       overrides[db] = {}
     elsif d.is_a?(Hash)
-      db = d.keys[0]
+      db = d.keys[0].to_s
       overrides[db] = d.values[0]
-      log.info "==> #{db} is a hash with #{overrides[db].inspect}"
+      log "==> #{db} is a hash with #{overrides[db].inspect}"
     end
 
    template_variables = base_template_variables.merge(overrides[db])
@@ -137,7 +137,7 @@ if %x(hostname).strip == backup_server
    end
 
    cron "memsql backup #{db}" do
-     hour "#{attrib.hours}"
+     hour "#{template_variables[:hours]}"
      minute '0'
      weekday '*'
      command backup_script

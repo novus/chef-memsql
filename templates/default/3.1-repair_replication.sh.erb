@@ -1,0 +1,57 @@
+#!/bin/bash
+
+HOST=127.0.0.1
+PORT=3306
+
+run_query () {
+    declare host=${2:-"$HOST"}
+    declare port=${3:-"$PORT"}
+    mysql -s -h$host -P$port -e "$1"
+}
+
+databases="$(run_query "show databases")"
+nodes="$(run_query "select host, port from information_schema.leaves")
+$(run_query "select host, port from information_schema.aggregators")"
+
+echo "Repairing MemSQL databases..."
+
+for database in $databases; do
+    if [ "$database" = "memsql" -o "$database" = "information_schema" ]; then
+        continue
+    fi
+
+    master_pos="$(run_query "show databases extended like '$database'" | cut -f5)"
+    echo "$database at $master_pos on master"
+    while read -r node; do
+        host=${node%	*}
+        port=${node#*	}
+        if [ "$host:$port" = "$HOST:$PORT" ]; then
+            continue
+        fi
+        if mysql -h$host -P$port -e '' $database; then
+            slave_pos="$(run_query "show databases extended like '$database'" $host $port | cut -f5)"
+            echo "$database at $slave_pos on $host:$port"
+
+            if [ "$master_pos" != "$slave_pos" ]; then
+                echo "Master is ahead of slave: $master_pos vs. $slave_pos"
+                echo "Database: $database Master: $HOST:$PORT Slave: $host:$port"
+
+                echo "Sleeping for 1 second, then retrying..."
+                sleep 1
+
+                new_slave_pos="$(run_query "show databases extended like '$database'" $host $port | cut -f5)"
+                if [ "$new_slave_pos" = "$slave_pos" ]; then
+                    echo "Slave has not moved.  Assuming replication is broken and attempting to repair..."
+                    run_query "PAUSE REPLICATING $database" $host $port >/dev/null || echo "Could not pause $database"
+                    run_query "CONTINUE REPLICATING $database" $host $port >/dev/null || echo "Could not continue $database"
+                else
+                    echo "Slave has moved.  Assuming replication will eventually catch up."
+                fi
+            else
+                echo "$database is in sync on $host:$port"
+            fi
+        fi
+    done <<< "$nodes"
+done
+
+echo

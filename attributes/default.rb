@@ -30,6 +30,11 @@ default[:memsql][:ops][:url] = 'http://download.memsql.com/ops-3.1.2'
 default[:memsql][:ops][:package] = 'memsql-ops-3.1.2.x86_64.deb'
 default[:memsql][:ops][:http_host] = '0.0.0.0'
 default[:memsql][:ops][:http_port] = 9000
+# Retention is in hours
+default[:memsql][:ops][:retention] = 6
+default[:memsql][:ops][:events_retention] = 6
+default[:memsql][:ops][:facts_retention] = 6
+
 
 default[:memsql][:collectd][:url] = "http://download.memsql.com/ops-3.1.2"
 default[:memsql][:collectd][:package] = "collectd-5.4.0-6.x86_64.deb"
