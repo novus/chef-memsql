@@ -119,13 +119,14 @@ if %x(hostname).strip == backup_server
      owner "root"
      group "root"
      variables template_variables
+     mode 0755
    end
 
    template rotate_script do
      source "rotate-backups.py.erb"
      owner "root"
      group "root"
-     mode 755
+     mode 0755
      variables template_variables
    end
 

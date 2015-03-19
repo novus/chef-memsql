@@ -99,19 +99,11 @@ if is_master && node.memsql.bugs.broken_replication_in_31
   end
 
   cron 'Fix Broken Replication in MemSQL 3.1' do
-    hour '*'
     minute '*/15'
-    day '*'
-    month '*'
-    weekday '*'
     command replication_unmesser_upper
-    user 'memsql'
     mailto 'itops@novus.com'
     path '/usr/local/sbin:/bin:/usr/bin'
-    home '/tmp'
-    shell '/bin/bash'
   end
-
 
 end
 
