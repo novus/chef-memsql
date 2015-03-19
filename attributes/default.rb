@@ -9,7 +9,7 @@ default[:memsql][:url] = "http://download.memsql.com"
 default[:memsql][:users] = [{:name => 'developer', :password => 'password'}]
 default[:memsql][:node_scope][:enabled] = true
 default[:memsql][:node_scope][:filter] = " AND chef_environment:#{node.chef_environment}"
-default[:memsql][:bug][:broken_replication_in_31] = false
+default[:memsql][:bugs][:broken_replication_in_31] = false
 
 ### Backups
 # If all of these attributes are populated in the environment/role, backup
