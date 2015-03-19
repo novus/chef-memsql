@@ -31,7 +31,7 @@ end
 
 #TODO refactor
 filtered = node.memsql.node_scope.enabled ? node.memsql.node_scope.filter : ""
-
+mailto = node.memsql.mailto
 is_master = node.run_list.roles.include?("memsql_master_aggregator") ? true : false
 
 #install client libs
@@ -101,7 +101,7 @@ if is_master && node.memsql.bugs.broken_replication_in_31
   cron 'Fix Broken Replication in MemSQL 3.1' do
     minute '*/15'
     command replication_unmesser_upper
-    mailto 'itops@novus.com'
+    mailto mailto
     path '/usr/local/sbin:/bin:/usr/bin'
   end
 
