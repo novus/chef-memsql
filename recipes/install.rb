@@ -32,6 +32,8 @@ end
 #TODO refactor
 filtered = node.memsql.node_scope.enabled ? node.memsql.node_scope.filter : ""
 
+is_master = node.run_list.roles.include?("memsql_master_aggregator") ? true : false
+
 #install client libs
 if node.platform_family == 'debian'
   include_recipe 'apt::default'
@@ -60,7 +62,7 @@ service "memsql" do
   action [:enable, :start]
 end
 
-#find the master aggregatorggpnp
+#find the master aggregator
 
 master_aggregator = search(:node, "role:memsql_master_aggregator #{filtered}").first || node
 
@@ -81,9 +83,36 @@ template "/var/lib/memsql/memsql.cnf" do
   group "memsql"
   variables({
                 :master_aggregator_ip => node.run_list.roles.include?("memsql_child_aggregator") ? master_aggregator["ipaddress"] : nil,
-                :is_master => node.run_list.roles.include?("memsql_master_aggregator") ? true : false,
+                :is_master => is_master,
                 :redundancy_level => node.memsql.redundancy_level
             })
+end
+
+if is_master && node.memsql.bugs.broken_replication_in_31
+  replication_unmesser_upper = '/usr/local/sbin/broken_replication_in_31.sh'
+
+  template replication_unmesser_upper do
+    source 'broken_replication_in_31.sh.erb'
+    owner 'root'
+    group 'root'
+    mode '0755'
+  end
+
+  cron 'Fix Broken Replication in MemSQL 3.1' do
+    hour '*'
+    minute '*/15'
+    day '*'
+    month '*'
+    weekday '*'
+    command replication_unmesser_upper
+    user 'memsql'
+    mailto 'itops@novus.com'
+    path '/usr/local/sbin:/bin:/usr/bin'
+    home '/tmp'
+    shell '/bin/bash'
+  end
+
+
 end
 
 node[:memsql][:users].each do |user|
