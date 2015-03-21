@@ -126,16 +126,17 @@ if %x(hostname).strip == backup_server
      source "rotate-backups.py.erb"
      owner "root"
      group "root"
-     mode 0755
+     mode 0644  #FIXME NEUTRALIZED FOR NOW
      variables template_variables
    end
 
-   cron "rotate memsql backups for #{db}" do
-     hour '*'
-     minute '30'
-     weekday '*'
-     command rotate_script
-   end
+   #FIXME NEUTRALIZED. Also possibly running more than necessary given that backups themselves call rotation.
+   # cron "rotate memsql backups for #{db}" do
+   #   hour '*'
+   #   minute '30'
+   #   weekday '*'
+   #   command rotate_script
+   # end
 
    cron "memsql backup #{db}" do
      hour "#{template_variables[:hours]}"
