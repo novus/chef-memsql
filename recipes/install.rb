@@ -53,13 +53,13 @@ end
 
 dpkg_package "memsql" do
   source  "#{Chef::Config[:file_cache_path]}/memsql-#{node[:memsql][:version]}"
-  action [:install, :upgrade]
+  action [:nothing]
 end
 
 #start memsql
 service "memsql" do
   supports :status => true, :restart => true, :reload => true, :start => true, :stop => true
-  action [:enable, :start]
+  action [:nothing]
 end
 
 #find the master aggregator
