@@ -45,22 +45,22 @@ end
   end
 end
 
-remote_file "#{Chef::Config[:file_cache_path]}/memsql-#{node[:memsql][:version]}" do
-  source "#{node[:memsql][:url]}/#{node[:memsql][:license]}/memsql-#{node[:memsql][:version]}"
-  action :create_if_missing
-  #notifies :install, "dpkg_package[memsql]", :immediately
-end
+# remote_file "#{Chef::Config[:file_cache_path]}/memsql-#{node[:memsql][:version]}" do
+#   source "#{node[:memsql][:url]}/#{node[:memsql][:license]}/memsql-#{node[:memsql][:version]}"
+#   action :create_if_missing
+#   #notifies :install, "dpkg_package[memsql]", :immediately
+# end
 
-dpkg_package "memsql" do
-  source  "#{Chef::Config[:file_cache_path]}/memsql-#{node[:memsql][:version]}"
-  action [:nothing]
-end
+# dpkg_package "memsql" do
+#   source  "#{Chef::Config[:file_cache_path]}/memsql-#{node[:memsql][:version]}"
+#   action [:nothing]
+# end
 
-#start memsql
-service "memsql" do
-  supports :status => true, :restart => true, :reload => true, :start => true, :stop => true
-  action [:nothing]
-end
+# #start memsql
+# service "memsql" do
+#   supports :status => true, :restart => true, :reload => true, :start => true, :stop => true
+#   action [:nothing]
+# end
 
 #find the master aggregator
 

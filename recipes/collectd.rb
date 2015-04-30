@@ -55,6 +55,6 @@ else
   #start collectd
   service "collectd" do
     supports :status => true, :restart => true, :reload => true, :start => true, :stop => true
-    action [ :enable, :start ]
+    action [ :enable ]
   end
 end
