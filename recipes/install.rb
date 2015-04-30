@@ -76,6 +76,8 @@ leaves.each do |node|
   Chef::Log.info("leaf #{node["name"]} has IP address #{node["ipaddress"]}")
 end
 
+directory '/var/lib/memsql'
+
 template "/var/lib/memsql/memsql.cnf" do
   source "memsql.cnf.erb"
   mode 0600
