@@ -2,11 +2,18 @@ default[:memsql][:owner] = 'memsql'
 default[:memsql][:group] = node.memsql.owner
 default[:memsql][:uid] = 2027
 default[:memsql][:gid] = node.memsql.uid
-default[:memsql][:license] = nil
+
+# Create the following data bags for use here:
+memsql_creds     = Chef::EncryptedDataBagItem.load("secrets", "memsql")
+datacrunch_creds = Chef::EncryptedDataBagItem.load("secrets", "datacrunch")
+developer_creds  = Chef::EncryptedDataBagItem.load("secrets", "developer")
+
+default[:memsql][:license] = "#{memsql_creds['license']}"
 default[:memsql][:version] = "3.1.x86_64.deb"
-default[:memsql][:redundancy_level] = 1
+default[:memsql][:redundancy_level] = 2
 default[:memsql][:url] = "http://download.memsql.com"
-default[:memsql][:users] = [{:name => 'developer', :password => 'password'}]
+
+default[:memsql][:users] = [{:name => "#{developer_creds['user']}", :password => "#{developer_creds['password']}"}, {:name => "#{datacrunch_creds['user']}", :password => "#{datacrunch_creds['password']}"}]
 default[:memsql][:node_scope][:enabled] = true
 default[:memsql][:node_scope][:filter] = " AND chef_environment:#{node.chef_environment}"
 default[:memsql][:mailto] = nil
